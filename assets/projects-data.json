@@ -1,0 +1,62 @@
+[
+  {
+    "id": "nexus-platform",
+    "title": "Nexus Research Platform",
+    "category": "Engineering",
+    "description": "A real-time data aggregation engine for multi-source intelligence feeds, built for a defense analytics client.",
+    "outcome": "Reduced analyst query latency from 4.2 s to 340 ms. Ingests 12 simultaneous data streams with sub-second fan-out.",
+    "tools": ["Python", "FastAPI", "PostgreSQL", "Redis", "Docker"],
+    "image": "assets/screenshots/nexus-platform.png",
+    "link": "#"
+  },
+  {
+    "id": "spectra-dashboard",
+    "title": "Spectra Analytics Dashboard",
+    "category": "Design",
+    "description": "End-to-end design system and interactive dashboard for a climate-tech startup tracking carbon offset metrics.",
+    "outcome": "Shipped in 6 weeks from discovery to handoff. Adopted across 3 internal product teams. Reduced onboarding time by 40%.",
+    "tools": ["Figma", "React", "D3.js", "Tailwind"],
+    "image": "assets/screenshots/spectra-dashboard.png",
+    "link": "#"
+  },
+  {
+    "id": "helix-protocol",
+    "title": "Helix Protocol",
+    "category": "Research",
+    "description": "Cryptographic protocol design for decentralized identity verification across distributed ledger networks.",
+    "outcome": "Protocol formally verified. Proof-of-concept deployed on testnet. Paper submitted to IEEE S&P '25 review.",
+    "tools": ["Rust", "Solidity", "Zero-Knowledge Proofs"],
+    "image": "assets/screenshots/helix-protocol.png",
+    "link": "#"
+  },
+  {
+    "id": "meridian-app",
+    "title": "Meridian Mobile App",
+    "category": "Product",
+    "description": "Cross-platform logistics app enabling real-time fleet tracking and route optimization for a Series A startup.",
+    "outcome": "Launched to 800 drivers in 3 cities. Average route efficiency improved 22%. App Store rating 4.7 ★.",
+    "tools": ["React Native", "Node.js", "MapboxGL", "Firebase"],
+    "image": "assets/screenshots/meridian-app.png",
+    "link": "#"
+  },
+  {
+    "id": "cortex-ml-pipeline",
+    "title": "Cortex ML Pipeline",
+    "category": "Engineering",
+    "description": "Automated machine learning pipeline for predictive maintenance in industrial manufacturing environments.",
+    "outcome": "Achieved 94.3% fault-prediction accuracy. Cut unplanned downtime by 31% in the first quarter post-deploy.",
+    "tools": ["Python", "TensorFlow", "Airflow", "AWS SageMaker"],
+    "image": "assets/screenshots/cortex-ml-pipeline.png",
+    "link": "#"
+  },
+  {
+    "id": "aether-brand",
+    "title": "Aether Brand Identity",
+    "category": "Design",
+    "description": "Complete brand identity system for a biotech startup — logo, type system, color palette, and marketing collateral.",
+    "outcome": "Brand adopted across Series A fundraise deck and investor portal. Identified by investors as a key trust signal.",
+    "tools": ["Illustrator", "After Effects", "Figma"],
+    "image": "assets/screenshots/aether-brand.png",
+    "link": "#"
+  }
+]

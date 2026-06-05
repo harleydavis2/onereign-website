@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OneReign — Where Possibility Becomes Inevitable</title>
+  <meta name="description" content="OneReign transforms possibility into reality through deep research, engineering, and relentless execution.">
+
+  <!-- Resource hints: preconnect BEFORE stylesheet requests for max effect -->
+  <link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- DNS prefetch fallbacks for browsers that don't support preconnect -->
+  <link rel="dns-prefetch" href="https://api.fontshare.com">
+  <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+
+  <!-- Preload critical above-fold assets -->
+  <link rel="preload" href="assets/logo.png" as="image" fetchpriority="high">
+
+  <!-- Fonts: Clash Display & Satoshi (Fontshare), JetBrains Mono (Google Fonts) -->
+  <!-- Both CDN URLs include display=swap so text renders immediately in fallback font -->
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@200,300,400,500,600,700&f[]=satoshi@300,400,500,700&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap">
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-noise">
+
+  <!-- Skip to main content — first focusable element for keyboard users -->
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- NAVIGATION                                  -->
+  <!-- ═══════════════════════════════════════════ -->
+  <nav id="nav" class="nav" aria-label="Primary navigation">
+    <div class="nav__inner">
+      <a href="#hero" class="nav__logo logo logo--nav" aria-label="OneReign — Home">
+        <img src="assets/logo.png" alt="OneReign" height="40" width="40"
+             loading="eager" fetchpriority="high">
+      </a>
+      <ul class="nav__links" id="nav-links" role="list">
+        <li><a href="#about">Research</a></li>
+        <li><a href="#services">Engineering</a></li>
+        <li><a href="#portfolio">Products</a></li>
+        <li><a href="#team">About</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+      <button class="nav__hamburger" id="nav-hamburger" aria-label="Toggle menu" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- HERO                                        -->
+  <!-- ═══════════════════════════════════════════ -->
+  <main id="main-content">
+
+  <section id="hero" class="hero">
+    <!-- Emergence grid background -->
+    <div class="emergence-grid" aria-hidden="true"></div>
+    <!-- Radial glows -->
+    <div class="bg-glow bg-glow--blue" style="top:30%;left:50%;transform:translate(-50%,-50%)" aria-hidden="true"></div>
+    <div class="bg-glow bg-glow--purple" style="top:65%;left:65%;transform:translate(-50%,-50%)" aria-hidden="true"></div>
+
+    <div class="hero__content">
+      <span class="hero__label">OneReign — Where Possibility Becomes Inevitable</span>
+      <h1 class="hero__title">
+        Deep research.<br>
+        <span class="accent">Engineered reality.</span>
+      </h1>
+      <h3 class="hero__subtitle">We solve hard problems that turn possibility into inevitability.</h3>
+      <div class="hero__ctas">
+        <a href="#portfolio" class="btn btn--primary" id="cta-explore">Explore Our Work</a>
+        <a href="#about" class="btn btn--ghost" id="cta-about">About OneReign</a>
+      </div>
+    </div>
+
+    <!-- Scroll indicator -->
+    <div class="hero__scroll" aria-hidden="true">
+      <div class="hero__scroll-line"></div>
+      <span class="hero__scroll-label">Scroll</span>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- ABOUT                                       -->
+  <!-- ═══════════════════════════════════════════ -->
+  <section id="about" class="about section">
+    <!-- Decorative hexagon rings -->
+    <div class="about__geo" aria-hidden="true">
+      <svg viewBox="0 0 360 360" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="180,10 340,95 340,265 180,350 20,265 20,95" stroke="#2563EB" stroke-width="1" fill="none"/>
+        <polygon points="180,40 310,112 310,248 180,320 50,248 50,112" stroke="#7C3AED" stroke-width="0.8" fill="none"/>
+        <polygon points="180,70 280,129 280,231 180,290 80,231 80,129" stroke="#06B6D4" stroke-width="0.6" fill="none"/>
+        <polygon points="180,100 250,146 250,214 180,260 110,214 110,146" stroke="#2563EB" stroke-width="0.4" fill="none"/>
+      </svg>
+    </div>
+
+    <div class="container">
+      <span class="section__label reveal">Who We Are</span>
+      <h2 class="section__title reveal">Formed by individuals.<br>United as one.</h2>
+
+      <div class="about__intro">
+        <p class="about__story reveal">
+          We were freelancers — designers, engineers, researchers — each solving problems independently across different industries and disciplines. Then we found each other. OneReign is what happens when individual excellence converges into collective inevitability. We don't just deliver work. We build things that last.
+        </p>
+        <div class="about__stat-group reveal-stagger">
+          <div class="about__stat">
+            <span class="about__stat-number">5+</span>
+            <span class="about__stat-label">Years Combined Experience</span>
+          </div>
+          <div class="about__stat">
+            <span class="about__stat-number">12+</span>
+            <span class="about__stat-label">Projects Delivered</span>
+          </div>
+          <div class="about__stat">
+            <span class="about__stat-number">4</span>
+            <span class="about__stat-label">Disciplines Under One Roof</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="about__pillars reveal-stagger">
+        <div class="about__pillar">
+          <span class="about__pillar-num">01 /</span>
+          <span class="caption-label">Vision</span>
+          <p>To become the institution where the impossible becomes inevitable — where deep research meets relentless execution.</p>
+        </div>
+        <div class="about__pillar">
+          <span class="about__pillar-num">02 /</span>
+          <span class="caption-label">Mission</span>
+          <p>We transform possibility into reality through research, engineering, and execution that doesn't stop until the problem is solved.</p>
+        </div>
+        <div class="about__pillar">
+          <span class="about__pillar-num">03 /</span>
+          <span class="caption-label">Philosophy</span>
+          <p>Hidden order revealed. Possibility realized. Every system has a structure — we find it, and we build from there.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- SERVICES                                    -->
+  <!-- ═══════════════════════════════════════════ -->
+  <section id="services" class="services section">
+    <div class="container">
+      <span class="section__label reveal">What We Do</span>
+      <h2 class="section__title reveal">Capabilities</h2>
+      <div class="services__grid" id="services-grid">
+        <!-- Cards rendered by JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- PORTFOLIO                                   -->
+  <!-- ═══════════════════════════════════════════ -->
+  <section id="portfolio" class="portfolio section">
+    <div class="container">
+      <span class="section__label reveal">Our Work</span>
+      <h2 class="section__title reveal">Projects that mattered.</h2>
+      <div class="portfolio__filters" id="portfolio-filters">
+        <button class="filter-btn active" data-filter="all" aria-pressed="true">All</button>
+        <button class="filter-btn" data-filter="Design" aria-pressed="false">Design</button>
+        <button class="filter-btn" data-filter="Engineering" aria-pressed="false">Engineering</button>
+        <button class="filter-btn" data-filter="Research" aria-pressed="false">Research</button>
+        <button class="filter-btn" data-filter="Product" aria-pressed="false">Product</button>
+      </div>
+      <div class="portfolio__grid" id="portfolio-grid">
+        <!-- Cards rendered by JS from projects-data.json -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- TEAM                                        -->
+  <!-- ═══════════════════════════════════════════ -->
+  <section id="team" class="team section">
+    <div class="container">
+      <span class="section__label reveal">The Team</span>
+      <h2 class="section__title reveal">The individuals behind OneReign.</h2>
+      <div class="team__grid" id="team-grid">
+        <!-- Cards rendered by JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- CONTACT                                     -->
+  <!-- ═══════════════════════════════════════════ -->
+  <section id="contact" class="contact section">
+    <!-- Photonic corner glow -->
+    <div class="contact__glow" aria-hidden="true"></div>
+    <div class="container">
+      <span class="section__label reveal">Get In Touch</span>
+      <h2 class="section__title reveal">Let’s build something inevitable.</h2>
+
+      <!-- Email + social links -->
+      <div class="contact__meta reveal">
+        <a href="mailto:hello@onereign.ai" class="contact__email">hello@onereign.ai</a>
+        <div class="contact__socials">
+          <a href="#" class="contact__social-link" aria-label="OneReign on LinkedIn" rel="noopener noreferrer">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+          </a>
+          <a href="#" class="contact__social-link" aria-label="OneReign on GitHub" rel="noopener noreferrer">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+          </a>
+          <a href="#" class="contact__social-link" aria-label="OneReign on X (Twitter)" rel="noopener noreferrer">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4l16 16M4 20L20 4"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- Contact form -->
+      <form class="contact__form reveal" id="contact-form" novalidate>
+        <div class="contact__form-row">
+          <label for="contact-name" class="visually-hidden">Your name</label>
+          <input type="text" name="name" id="contact-name" placeholder="Name" required autocomplete="name">
+          <label for="contact-email" class="visually-hidden">Your email address</label>
+          <input type="email" name="email" id="contact-email" placeholder="Email" required autocomplete="email">
+        </div>
+        <label for="contact-message" class="visually-hidden">Your message</label>
+        <textarea name="message" id="contact-message" placeholder="Tell us about your project…" rows="5" required></textarea>
+        <div class="contact__form-footer">
+          <button type="submit" class="btn btn--primary" id="contact-submit">Send Message</button>
+          <p class="contact__success" id="contact-success" aria-live="polite" role="status">Message sent — we’ll be in touch.</p>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- FOOTER                                      -->
+  <!-- ═══════════════════════════════════════════ -->
+  <footer id="footer" class="footer">
+    <div class="container">
+      <div class="footer__top">
+        <a href="#hero" class="footer__logo logo logo--footer" aria-label="OneReign — Home">
+          <img src="assets/logo.png" alt="OneReign" height="32" width="32" loading="lazy">
+        </a>
+        <p class="footer__tagline">Where Possibility Becomes Inevitable.</p>
+      </div>
+      <nav class="footer__nav" aria-label="Footer navigation">
+        <a href="#about">Research</a>
+        <a href="#services">Engineering</a>
+        <a href="#portfolio">Products</a>
+        <a href="#team">About</a>
+        <a href="#contact">Contact</a>
+      </nav>
+      <div class="footer__pillars" aria-label="Brand pillars">
+        <span>POSSIBILITY</span>
+        <span aria-hidden="true">·</span>
+        <span>EMERGENCE</span>
+        <span aria-hidden="true">·</span>
+        <span>ALIGNMENT</span>
+        <span aria-hidden="true">·</span>
+        <span>RESOLUTION</span>
+        <span aria-hidden="true">·</span>
+        <span>INEVITABILITY</span>
+      </div>
+      <p class="footer__copyright">&copy; 2026 OneReign. All rights reserved.</p>
+    </div>
+  </footer>
+
+  </main><!-- /#main-content -->
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- PROJECT DETAIL MODAL                        -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div id="project-modal" class="modal" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="modal-title">
+    <!-- Backdrop — click to close -->
+    <div class="modal__backdrop" id="modal-backdrop" aria-hidden="true"></div>
+
+    <!-- Panel -->
+    <div class="modal__panel" role="document">
+      <!-- Close button -->
+      <button class="modal__close" id="modal-close" aria-label="Close project detail">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+
+      <!-- Header: category badge + title -->
+      <div class="modal__header">
+        <span class="modal__badge badge" id="modal-badge"></span>
+        <h2 class="modal__title" id="modal-title"></h2>
+      </div>
+
+      <!-- Decorative hex mark -->
+      <div class="modal__hex" aria-hidden="true">
+        <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <polygon points="32,4 58,18 58,46 32,60 6,46 6,18" stroke="currentColor" stroke-width="1.5" fill="none"/>
+          <polygon points="32,14 50,24 50,40 32,50 14,40 14,24" stroke="currentColor" stroke-width="1" fill="none"/>
+          <polygon points="32,22 43,28.5 43,35.5 32,42 21,35.5 21,28.5" stroke="currentColor" stroke-width="0.8" fill="none"/>
+        </svg>
+      </div>
+
+      <!-- Body -->
+      <div class="modal__body">
+        <p class="modal__desc" id="modal-desc"></p>
+        <div class="modal__outcome-block" id="modal-outcome-block">
+          <span class="modal__outcome-label caption-label">Outcome</span>
+          <p class="modal__outcome" id="modal-outcome"></p>
+        </div>
+        <div class="modal__tools" id="modal-tools"></div>
+      </div>
+
+      <!-- Footer: CTA link -->
+      <div class="modal__footer">
+        <a href="#" class="btn btn--primary" id="modal-link" target="_blank" rel="noopener noreferrer">
+          View Full Project
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+               style="margin-left:6px" aria-hidden="true">
+            <line x1="5" y1="12" x2="19" y2="12"/>
+            <polyline points="12 5 19 12 12 19"/>
+          </svg>
+        </a>
+        <button class="btn btn--ghost" id="modal-close-footer">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Script: defer so it loads in parallel and runs after HTML parse -->
+  <!-- DOMContentLoaded listener inside main.js still fires correctly with defer -->
+  <script src="main.js" defer></script>
+</body>
+</html>
