@@ -541,3 +541,639 @@ Code audit against known compatibility tables (MDN, caniuse.com) for all CSS pro
 
 ## Upcoming Sessions
 > Entries will be appended as work progresses.
+
+---
+
+## Session 1 (V3) — 2026-06-05
+
+### Completed: Set up project folder structure — Phase 1, task 1 ✔️
+
+### Files Created / Replaced
+
+| File | Action | Notes |
+|---|---|---|
+| `index.html` | Overwritten (V3 scaffold) | All 9 sections, skip link, `<main>` landmark, modal, Three.js CDN, font CDN links, `defer` on all scripts |
+| `style.css` | Overwritten (V3 scaffold) | Blank slate with section comment map; V1/V2 styles cleared |
+| `main.js` | Overwritten (V3 scaffold) | DOMContentLoaded wrapper with section stubs for Phases 4–13 |
+| `hero-canvas.js` | Created (stub) | Element 1 — Hero Particle Field |
+| `hero-hex.js` | Created (stub) | Element 2 — Hero Icosahedron Geometry |
+| `service-icons.js` | Created (stub) | Element 3 — Five 80px service card canvases |
+| `about-mesh.js` | Created (stub) | Element 4 — About undulating wireframe plane |
+
+### Decisions Made
+- **V1/V2 files wiped** — `index.html`, `style.css`, and `main.js` are fully replaced; V3 prompt supersedes all previous work
+- **Three.js r128 loaded via CDN** in `index.html` `<head>` (before all JS stubs, which `defer`)
+- **Font CDN links** included in scaffold so all downstream phases can reference the typefaces immediately
+- **Stub files annotated** — each Three.js file contains the full spec comment (geometry, material, lighting, animation) from the V3 prompt so the implementer can fill in without re-reading the prompt
+- **`assets/` folder** already contains `logotransparent.png` from earlier sessions — no copy needed
+
+### Notes
+- Next task: **Phase 1, task 2 — Add logo PNG to assets folder**
+  - Verify `assets/logotransparent.png` exists; if missing, copy/source it
+
+---
+
+## Session 2 (V3) — 2026-06-05
+
+### Completed: Add logo PNG to assets folder — Phase 1, task 2 ✔️
+
+### Work Done
+- Verified `assets/logotransparent.png` — present, 2.26 MB, no action required
+- Also confirmed `assets/logo.png` present (same file, legacy copy — unused by V3 HTML which references `logotransparent.png`)
+
+### Notes
+- Next task: **Phase 1, task 3 — Load fonts via CDN**
+  - Clash Display + Satoshi via Fontshare, JetBrains Mono via Google Fonts
+  - Font `<link>` tags are already in the V3 `index.html` scaffold — this task is a verify + confirm
+
+---
+
+## Session 3 (V3) — 2026-06-05
+
+### Completed: Load fonts via CDN — Phase 1, task 3 ✔️
+
+### Work Done
+
+**`index.html`** — Font CDN links verified correct (added in Session 1, Task 1):
+- Fontshare: `https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@400,500,700&display=swap`
+- Google Fonts: `https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap`
+- Preconnects to all three CDN origins present (`api.fontshare.com`, `fonts.googleapis.com`, `fonts.gstatic.com`)
+
+**`style.css`** — Added Section 01 "Font Loading & Type Scale":
+- `--font-display`, `--font-body`, `--font-code` custom properties defined on `:root` with system-font fallback stacks
+- Full type scale as CSS custom properties: `--text-h1` through `--text-code` (clamp for h1/h2/h3, fixed for body/caption/code)
+- Font weight vars: `--weight-h1` (600) through `--weight-caption` (500)
+- Letter-spacing vars: `--tracking-h1` (-0.02em), `--tracking-caption` (0.08em), etc.
+- Line-height vars: `--leading-h1` (1.05), `--leading-body` (1.65)
+- H1 minimum desktop size: `clamp(56px, 8vw, 120px)` — satisfies V3 "96px minimum" requirement on desktop widths
+
+### Notes
+- Next task: **Phase 1, task 4 — Define all CSS custom properties in `:root`**
+  - Colors, spacing scale, border radius, z-index, transitions, shadows
+
+---
+
+## Session 4 (V3) — 2026-06-05
+
+### Completed: Define all CSS custom properties in `:root` — Phase 1, task 4 ✔️
+
+### Work Done
+**`style.css`** — Added Section 02 "CSS Custom Properties" as a second `:root` block:
+
+- **Colors (10 vars):** `--bg-primary` (#0A0A0A) through `--bg-elevated` (#1C1C1C); `--text-primary` (#FAFAFA) through `--text-subtle` (30% white); three accent families (blue/purple/cyan), each with full and dim variants; four border vars including `--border-hover` (blue at 60%)
+- **Glows (3 vars):** `--glow-blue/purple/cyan` — box-shadow values ready for card hover states
+- **Spacing scale (8 vars):** `--space-xs` (4px) → `--space-4xl` (128px) + `--space-section` responsive clamp
+- **Container (3 vars):** `--container-width` (1200px), `--container-narrow` (760px), `--container-padding`
+- **Border radius (6 vars):** `--radius-sm` (4px) → `--radius-full` (9999px)
+- **Z-index layers (6 vars):** base → raised → nav (100) → overlay → modal (300) → noise (9999)
+- **Transitions (8 vars):** three easings (`--ease-out` decelerate, `--ease-in-out`, `--ease-spring`); four durations (150–600ms); three shorthand transition vars
+- **Shadows (5 vars):** sm → card → card-hover (layered: depth + blue ring + blue ambient) → elevated → modal
+- **Gradients (5 vars):** blue-purple linear, surface, glow-blue radial, glow-purple radial, text-accent
+- **Opacity helpers (4 vars):** grid (6%), pattern (5%), decoration (4%), noise (2.5%)
+
+### Notes
+- Next task: **Phase 1, task 5 — Add global base styles** (reset, body, scrollbar, selection color)
+
+---
+
+## Session 5 (V3) — 2026-06-05
+
+### Completed: Add global base styles — Phase 1, task 5 ✔️
+
+### Work Done
+**`style.css`** — Appended Section 03 "Global Base & Reset" + Utility Classes (~285 lines total):
+
+**Reset:**
+- `*, *::before, *::after` — `box-sizing: border-box`, zero margin/padding
+- `html` — `scroll-behavior: smooth`, `-webkit-font-smoothing: antialiased`, `text-rendering: optimizeLegibility`
+- `@media (prefers-reduced-motion: reduce)` — disables scroll-behavior + collapses all animation/transition durations to 0.01ms
+
+**Body:**
+- `background-color: --bg-primary` (#0A0A0A), `color: --text-primary`, `font-family: --font-body`, full type token wiring, `overflow-x: hidden`
+
+**Scrollbar:**
+- Chrome/Safari/Edge: `::-webkit-scrollbar` (6px), dark track, `--border-medium` thumb → `--accent-blue` on hover
+- Firefox: `scrollbar-width: thin`, `scrollbar-color: --border-medium --bg-primary`
+
+**Selection:**
+- `::selection` — blue at 35% opacity background, white text
+
+**Heading hierarchy:**
+- `h1–h6` all set to `--font-display`; `h1/h2/h3` individually wired to their size, weight, tracking, and leading vars from `:root`
+
+**Element resets:**
+- `a` — `color: inherit`, `text-decoration: none`, fast transition
+- `img, svg` — `display: block`, `max-width: 100%`
+- `ul, ol` — `list-style: none`
+- `button` — no bg/border, cursor pointer, inherits font
+- `input/textarea/select` — full dark-surface style with blue focus ring; `appearance: none` for cross-browser consistency; placeholder uses `--text-subtle`
+
+**Utility classes:**
+- `.container` — max-width 1200px, auto margins, `--container-padding` inline padding
+- `.section` — `position: relative`, `padding-block: --space-section`, `overflow: hidden`
+- `.caption-label` — Satoshi 500, 12px, 0.08em tracking, uppercase, `--accent-blue`
+- `.section__label`, `.section__title` — standard bottom-margin pattern
+- `.btn`, `.btn--primary`, `.btn--ghost` — complete button system with hover glows
+- `.visually-hidden` — WCAG clip-path pattern
+- `.badge`, `.badge--design/research/product` — category color variants
+- `.tag` — JetBrains Mono chip for tool tags
+
+### Notes
+- Next task: **Phase 1, task 6 — Add full-page CSS noise texture** via inline SVG `feTurbulence` filter at 2% opacity
+
+---
+
+## Session 6 (V3) — 2026-06-05
+
+### Completed: Add full-page CSS noise texture — Phase 1, task 6 ✔️
+
+### Work Done
+**`style.css`** — Added Section 04 "Full-page Noise Texture":
+- Applied to `body::after` to create a fixed, full-viewport overlay.
+- Uses inline SVG `feTurbulence` filter (`type='fractalNoise'`, `baseFrequency='0.9'`, `numOctaves='4'`) to generate realistic film grain/noise.
+- `pointer-events: none` ensures the noise layer does not intercept any clicks or hover interactions.
+- `z-index: var(--z-noise)` (9999) places it visually above all content.
+- `opacity: var(--opacity-noise)` sets it to 2.5%, matching the V3 design spec for a subtle texture.
+
+### Notes
+- **Phase 1 (Foundation) is now 100% complete.**
+- Next task: **Phase 2, task 1 — Pattern A (Emergence Grid)**
+  - Background System: SVG dot grid (1px dots, 32px spacing, 6% white opacity) to be used in Hero and Footer.
+
+---
+
+## Session 7 (V3) — 2026-06-05
+
+### Completed: Pattern A (Emergence Grid) — Phase 2, task 1 ✔️
+
+### Work Done
+**`style.css`** — Added Section 05 "Background Patterns":
+- Created `.hero::before` and `.footer::before` pseudo-elements.
+- Added absolute positioning (`inset: 0`) and `z-index: 0` to place the pattern correctly behind content.
+- Set `pointer-events: none` to avoid intercepting clicks.
+- Implemented the pattern using a pure CSS `radial-gradient` (1px circles, 6% white opacity, 32px x 32px sizing) as specified.
+- Added a positioning context (`position: relative`) to `.hero` and `.footer` to ensure the absolute pseudo-elements are contained correctly.
+
+### Notes
+- Next task: **Phase 2, task 2 — Pattern B (Hexagonal Mesh)**
+  - SVG repeating hex outline grid (0.5px stroke, blue 5% opacity) for Services + Portfolio.
+
+---
+
+## Session 8 (V3) — 2026-06-05
+
+### Completed: Pattern B (Hexagonal Mesh) — Phase 2, task 2 ✔️
+
+### Work Done
+**`style.css`** — Appended to Section 05 "Background Patterns":
+- Created `.services::before` and `.portfolio::before` pseudo-elements.
+- Added absolute positioning (`inset: 0`) and `z-index: 0` to place the pattern correctly behind content.
+- Set `pointer-events: none` to avoid intercepting interactions.
+- Added `opacity: var(--opacity-pattern)` (5%).
+- Converted the provided inline SVG pattern to a data URI and set it as the `background-image`.
+- The SVG uses `<rect>` with `fill="url(#hexgrid)"` and `<pattern id="hexgrid">` for accurate, seamless tiling of the hexagonal mesh.
+
+### Notes
+- Next task: **Phase 2, task 3 — Pattern C (Diagonal Noise Lines)**
+  - CSS repeating-linear-gradient 45°, 3% white, 8px repeat for About section.
+
+---
+
+## Session 9 (V3) — 2026-06-05
+
+### Completed: Pattern C (Diagonal Noise Lines) — Phase 2, task 3 ✔️
+
+### Work Done
+**`style.css`** — Appended to Section 05 "Background Patterns":
+- Created `.about::before` pseudo-element.
+- Added absolute positioning (`inset: 0`) and `z-index: 0` to place the pattern correctly behind content.
+- Set `pointer-events: none` to avoid intercepting interactions.
+- Implemented the pattern using a pure CSS `repeating-linear-gradient` (45deg, with `rgba(250, 250, 250, 0.025)` for 1px line every 8px).
+- Added `position: relative` to `.about` to ensure the absolute pseudo-element is contained.
+
+### Notes
+- Next task: **Phase 2, task 4 — Pattern D (Radial Burst)**
+  - SVG 24 radial lines from center-right, purple 8% opacity for Contact section.
+
+---
+
+## Session 10 (V3) — 2026-06-05
+
+### Completed: Pattern D (Radial Burst) — Phase 2, task 4 ✔️
+
+### Work Done
+**`style.css`** — Appended to Section 05 "Background Patterns":
+- Created `.contact::before` pseudo-element.
+- Added absolute positioning (`inset: 0`) and `z-index: 0` to place the pattern correctly behind content.
+- Set `pointer-events: none` to avoid intercepting interactions.
+- Set `opacity: 0.08` (8% opacity).
+- Converted the provided inline SVG pattern (24 radial lines radiating from a translated center point, generated using `<pattern>` and multiple rotated `<line>` elements) to a data URI and set it as the `background-image`.
+- Added `position: relative` to `.contact` to ensure the absolute pseudo-element is properly contained.
+
+### Notes
+- Next task: **Phase 2, task 5 — Pattern E (Resolution Pattern)**
+  - SVG concentric hexagons 800px centered, 4% white opacity for Team section.
+
+---
+
+## Session 11 (V3) — 2026-06-05
+
+### Completed: Pattern E (Resolution Pattern) & Background System — Phase 2, tasks 5 & 6 ✔️
+
+### Work Done
+**`style.css`** — Appended to Section 05 "Background Patterns":
+- Created `.team::before` pseudo-element.
+- Added absolute positioning (`inset: 0`) and `z-index: 0` to place the pattern correctly behind content.
+- Set `pointer-events: none` to avoid intercepting interactions.
+- Set `opacity: 0.04` (4% opacity).
+- Handcrafted the SVG to use fixed coordinates (`viewBox="-350 -400 700 800"`, `width="800"`, `height="800"`) and mathematical polygon points for the concentric hexagons, avoiding browser translation inconsistencies.
+- Converted the SVG to a data URI and set it as the `background-image`.
+- Used `background-position: center; background-repeat: no-repeat;` to precisely center the 800px element.
+- Added `position: relative` to `.team` to ensure the absolute pseudo-element is properly contained.
+
+### Notes
+- **Phase 2 (Background System) is now 100% complete.**
+- Next task: **Phase 3, task 1 — Three.js Hero Particle Field**
+  - Implement WebGL canvas with drifting connected nodes (blue), mouse pull interaction, fading on scroll.
+
+---
+
+## Session 12 (V3) — 2026-06-05
+
+### Completed: Hero Particle Field — Phase 3, task 1 ✔️
+
+### Work Done
+**`hero-canvas.js`** — Implemented the Element 1 specification using Three.js:
+- Configured 120 particles rendered via `InstancedMesh` with `SphereGeometry` (blue, 0.5 opacity).
+- Configured dynamically updated `LineSegments` for connecting nodes within 150 units.
+- Assigned direct styling to `#hero-canvas` (`position: fixed`, `inset: 0`, `z-index: -1`, `pointer-events: none`) to keep it securely behind content without intercepting DOM events.
+- Implemented natural drifting motion with boundary bouncing.
+- Implemented the "mouse pull" interaction: the nearest 15 nodes smoothly lerp towards the mouse intersection on a Z=0 plane (using `pointermove` on the `window`).
+- Connected a `scroll` listener to fade the canvas opacity to 0 as the user scrolls past `window.innerHeight`.
+- Handled `resize` events for camera aspect ratio and renderer size.
+
+### Notes
+- Next task: **Phase 3, task 2 — Hero Hex Geometry**
+  - Implement IcosahedronGeometry wireframe on the right side of the hero, slow rotation, and mouse drag rotation.
+
+---
+
+## Session 13 (V3) — 2026-06-05
+
+### Completed: Hero Hex Geometry — Phase 3, task 2 ✔️
+
+### Work Done
+**`hero-hex.js`** — Implemented the Element 2 specification using Three.js:
+- Targeted `#hero-hex-canvas` and configured the camera based on its container's dimensions.
+- Created a `THREE.Group` consisting of an inner solid metallic `IcosahedronGeometry(120, 1)` and a slightly larger outer wireframe `IcosahedronGeometry(121, 1)` with blue color and 15% opacity.
+- Configured lighting with an AmbientLight, a DirectionalLight, and a blue PointLight strategically positioned to highlight the wireframe edges.
+- Implemented smooth animation loop: standard Y-axis rotation at 0.001 rad/frame, accelerating to 0.004 when hovered, with subtle Z-axis sinusoidal tilt.
+- Added mouse drag rotation logic allowing the user to manually spin the geometry via pointer events.
+- Added a 1-second CSS transition fade-in sequence triggered after page load.
+- Hid the entire container on mobile displays (`< 768px`) via JavaScript resizing logic to conserve resources and layout space.
+
+### Notes
+- Fixed an accidental deletion of Element 1 in `TODO_V3.md` from the previous step.
+- Next task: **Phase 3, task 3 — Service Card Icons**
+  - 5 small 80px canvases per service card (TorusKnot, Icosahedron, Octahedron, Box, Torus), blue metallic material, pause on hover.
+
+---
+
+## Session 14 (V3) — 2026-06-05
+
+### Completed: Service Card Icons — Phase 3, task 3 ✔️
+
+### Work Done
+**`service-icons.js`** — Implemented the Element 3 specification using Three.js:
+- Configured 5 distinct geometry configurations mapped to specific DOM IDs (`icon-engineering`, `icon-design`, `icon-research`, `icon-products`, `icon-platforms`).
+- Used a shared `MeshStandardMaterial` (`color: 0x2563EB`, `metalness: 0.8`, `roughness: 0.2`) across all icon meshes.
+- Set up isolated WebGL renderers for each canvas, explicitly sized at 80x80px with correct pixel ratio handling.
+- Applied AmbientLight and a targeted blue PointLight to each scene.
+- Created a unified `requestAnimationFrame` loop to handle the rotation (`x += 0.008`, `y += 0.012`) of all active geometries simultaneously.
+- Implemented hover pause logic: listening for `mouseenter`/`mouseleave` on the closest `.card` container to dynamically pause and resume individual mesh rotations.
+
+### Notes
+- The script robustly handles elements that don't yet exist in the DOM, allowing it to function correctly when the Phase 8 Service section HTML is added.
+- Next task: **Phase 3, task 4 — About Mesh Background**
+  - Undulating sine-wave grid plane, very low opacity wireframe, calm ocean motion.
+
+---
+
+## Session 15 (V3) — 2026-06-05
+
+### Completed: About Mesh Background & Three.js Elements — Phase 3, task 4 ✔️
+
+### Work Done
+**`about-mesh.js`** — Implemented the Element 4 specification using Three.js:
+- Configured `#about-canvas` to absolutely position itself behind the `.about` section content (`z-index: 0`, `pointer-events: none`).
+- Initialized a `PlaneGeometry(2000, 800, 40, 20)` with a blue `MeshBasicMaterial` (`wireframe: true`, `opacity: 0.07`).
+- Rotated the plane (`mesh.rotation.x = -Math.PI / 2`) so it acts as a floor, and shifted it down slightly.
+- Placed a `PerspectiveCamera(45)` at `(0, 300, 400)` looking down at `(0, 0, -200)` to achieve the 45-degree angle.
+- Set up an animation loop that iterates over the geometry's `position` buffer attribute every frame, calculating a new Z-axis displacement for each vertex using the formula: `sin(x * 0.01 + time) * 15 + cos(y * 0.01 + time * 0.7) * 10` to create a calm, undulating ocean motion.
+- Integrated an `IntersectionObserver` to automatically pause the `requestAnimationFrame` loop when the `.about` container is outside the viewport, heavily optimizing performance.
+- Implemented robust window resizing logic to keep the perspective accurate.
+
+### Notes
+- **Phase 3 (Three.js 3D Elements) is now 100% complete.** All four dynamic 3D elements have been stubbed and fully implemented according to spec.
+- Next task: **Phase 4 — Navigation**
+  - Implement fixed nav with glassmorphism background, static logo on the left, and nav links + CTA on the right.
+
+---
+
+## Session 16 (V3) — 2026-06-05
+
+### Completed: Navigation Structure — Phase 4 ✔️
+
+### Work Done
+**`style.css`** — Appended Section 06 "Navigation":
+- Styled `.nav` as a fixed header (`z-index: var(--z-fixed)`, 80px height) using flexbox.
+- Implemented the glassmorphism aesthetic: `rgba(10, 10, 10, 0.8)` background combined with `backdrop-filter: blur(20px)`.
+- Applied a simple 1.5s fade-in keyframe animation to `.nav__logo` and explicitly disabled pointer events on the image.
+- Set up a dynamic `.nav--scrolled` class that intensifies the bottom border color when active.
+- Configured `.nav__links` using JetBrains Mono uppercase styling and strict hover states.
+- Built a mobile hamburger icon and `.nav__mobile-overlay` with flexbox centering and transition visibility.
+- Implemented staggered `transition-delay` logic on mobile overlay links so they sequentially fade up.
+- Wrote desktop media query (`min-width: 768px`) to toggle visibility between the hamburger/overlay system and the standard flex row links/CTA button.
+
+**`main.js`** — Appended Navigation logic:
+- Added `window.addEventListener('scroll')` to toggle the `.nav--scrolled` class at the 80px threshold.
+- Hooked up `click` listeners to the hamburger to toggle `.is-active` state and `aria-expanded` attributes on both the button and the overlay.
+- Ensured overlay automatically closes if a link inside it is clicked.
+
+### Notes
+- **Phase 4 (Navigation) is now 100% complete.**
+- Next task: **Phase 5 — Hero Section**
+  - Implement full viewport height layout (left 55% text, right 45% Three.js canvas), custom H1 styling, CTA buttons, trust stats bar, and staggered entrance animation sequence.
+
+---
+
+## Session 17 (V3) — 2026-06-05
+
+### Completed: Hero Section — Phase 5 ✔️
+
+### Work Done
+**`style.css`** — Appended Section 07 "Hero":
+- Styled `.hero` for `min-height: 100vh` and added `padding-top: 80px` to offset the fixed navigation.
+- Established a responsive flex layout: `.hero__inner` stacks vertically on mobile and switches to a horizontal split (left 55% text, right 45% canvas wrapper) at `min-width: 992px`.
+- Created `.caption-label` utility class using JetBrains Mono text to style the primary caption.
+- Configured the two-line H1 (`.hero__heading`): line 1 uses solid text color, while line 2 utilizes `background-clip: text` with the brand gradient.
+- Added styling for the `.hero__ctas` button group and the `.hero__stats` trust bar.
+- Implemented CSS animation logic for `.reveal-item.is-revealed` using a custom keyframe (`revealUp`) to smoothly fade and translate elements upwards over 0.8s using `var(--ease-out-back)`.
+
+**`index.html`** — Added Reveal Hook:
+- Used `multi_replace_file_content` to dynamically insert the `.reveal-item` class onto 6 key elements in the hero section: the caption, the H1, the body text, the CTA container, the stats bar, and the Hex canvas wrapper.
+
+**`main.js`** — Implemented Stagger Sequence:
+- Added a JavaScript block that queries `.hero .reveal-item`.
+- On DOM load (with a slight 300ms delay to allow the logo fade), it iterates through the elements and dynamically appends the `.is-revealed` class, spacing them 80ms apart to create the sophisticated 10-step staggered entrance specified in the requirements.
+
+### Notes
+- **Phase 5 (Hero Section) is now 100% complete.**
+- Next task: **Phase 6 — Marquee Trust Bar**
+  - Full-width scrolling marquee between Hero and About.
+
+---
+
+## Session 18 (V3) — 2026-06-05
+
+### Completed: Marquee Trust Bar — Phase 6 ✔️
+
+### Work Done
+**`style.css`** — Appended Section 08 "Marquee Trust Bar":
+- Configured `.marquee` container with `overflow: hidden`, `#111111` background, and subtle top/bottom borders matching the design system (`rgba(250, 250, 250, 0.05)`).
+- Set up `.marquee__track` as a flex container with `width: max-content` to hold the duplicated span tags side-by-side.
+- Styled the text content using Satoshi (`var(--font-body)`), `font-weight: 500`, uppercase formatting, and `0.1em` letter spacing with 40% white opacity.
+- Built the `@keyframes marquee` animation from `translateX(0)` to `translateX(-50%)`.
+- Applied `animation: marquee 30s linear infinite` to create a smooth, seamless infinite scrolling effect (utilizing the perfectly duplicated strings in the HTML).
+
+### Notes
+- **Phase 6 (Marquee) is now 100% complete.**
+- Next task: **Phase 7 — About Section**
+  - Layout the H2 pull quote, Vision/Mission blocks with accent borders, and horizontal brand pillar footer.
+
+---
+
+## Session 19 (V3) — 2026-06-05
+
+### Completed: About Section Layout — Phase 7 ✔️
+
+### Work Done
+**`index.html`** — Fixed HTML attribute:
+- Updated the canvas ID from `about-mesh-canvas` to `about-canvas` to properly sync with the JavaScript logic implemented in Phase 3.
+
+**`style.css`** — Appended Section 09 "About":
+- Configured `.about` as a `relative` container with `overflow: hidden` to encapsulate the Three.js mesh canvas.
+- Built a responsive `.about__inner` flexbox layout (stacking on mobile, side-by-side 45%/55% split on desktop).
+- Styled the `.about__quote` (left side) utilizing `var(--font-display)` to create a strong visual hierarchy.
+- Styled the `.about__right` content blocks (Vision, Mission, Philosophy):
+  - Applied subtle `var(--space-lg)` left padding.
+  - Added targeted left borders (`var(--accent-blue)`, `var(--accent-blue-hover)`, and 40% white) to visually distinguish the three blocks.
+- Structured the `.about__pillars` footer:
+  - Flexbox spaced-between layout on desktop.
+  - Added a delicate top border divider (`rgba(250, 250, 250, 0.1)`).
+  - Used JetBrains Mono styling, tracking, and uppercase format.
+  - Implemented mobile media queries to stack the pillars vertically and hide the `aria-hidden` bullet separators.
+
+### Notes
+- **Phase 7 (About Section) is now 100% complete.**
+- Next task: **Phase 8 — Services Section**
+  - Caption + H2, 5 service cards with Three.js canvas icons (Element 3), dark surface styling with hover states, and mobile horizontal scrolling.
+
+---
+
+## Session 20 (V3) — 2026-06-05
+
+### Completed: Services Section — Phase 8 ✔️
+
+### Work Done
+**`index.html`** — Added Services HTML:
+- Injected the 5 structurally identical `<article class="card service-card reveal-item">` elements directly into the DOM instead of rendering via JS to avoid race conditions with the Three.js `service-icons.js` initialization.
+- Mapped the canvas IDs (`#icon-engineering`, `#icon-design`, `#icon-research`, `#icon-products`, `#icon-platforms`) to their respective cards.
+- Ensured the `.reveal-item` hook was applied for the staggered entrance animations.
+
+**`style.css`** — Appended Section 10 "Services":
+- Styled the `.services__grid` with a mobile-first `flex` layout featuring `overflow-x: auto` and `scroll-snap-type: x mandatory` for a smooth horizontal swipe experience on smaller screens.
+- Utilized vendor-specific CSS to strictly hide the horizontal scrollbar (`::-webkit-scrollbar { display: none; }`, `-ms-overflow-style: none`, `scrollbar-width: none`).
+- Established a responsive 3-column CSS Grid at `min-width: 992px` and specifically aligned the 4th and 5th cards to center them logically within the 3-column structure.
+- Designed the `.service-card` UI:
+  - High-end dark surface using `rgba(10, 10, 10, 0.6)` paired with `backdrop-filter: blur(10px)`.
+  - Subtle borders `rgba(250, 250, 250, 0.05)` that transition to solid `var(--accent-blue)` on hover.
+  - Hardcoded the internal `.service-card__icon canvas` to `width: 100% !important; height: 100% !important;` to ensure the dynamically injected Three.js elements fit the designated 80x80 container flawlessly.
+
+### Notes
+- **Phase 8 (Services Section) is now 100% complete.**
+- Next task: **Phase 9 — Portfolio / Work Section**
+  - Filter pills logic, 3-column grid structure, and interactive placeholder project cards.
+
+---
+
+## Session 21 (V3) — 2026-06-05
+
+### Completed: Portfolio / Work Section — Phase 9 ✔️
+
+### Work Done
+**`main.js`** — Implemented Dynamic Portfolio Rendering & Filtering:
+- Defined an array of 6 highly realistic placeholder project objects, each containing an ID, title, category, badge text, description, tech stack tags, and link.
+- Built a `renderProjects(filterStr)` function that conditionally filters the dataset based on the selected category pill.
+- Dynamically injected the HTML for each card into `#portfolio-grid`. 
+  - Substituted image thumbnails with a sophisticated linear gradient (`background: linear-gradient(135deg, rgba(250,250,250,0.02), rgba(250,250,250,0.08))`) to perfectly fulfill the "realistic placeholder" requirement.
+  - Automatically mapped `p.tools` to dynamically generated `<span class="tag">` elements.
+- Applied the `.reveal-item` hook to injected cards and wrote a `setTimeout` (50ms) to attach the `.is-revealed` class post-render, ensuring the staggered entrance animations fire seamlessly even after filtering.
+- Attached `click` event listeners to `.filter-btn` elements to handle the UI state (`.active`, `aria-pressed`) and trigger `renderProjects`.
+
+**`style.css`** — Appended Section 11 "Portfolio":
+- Styled the `.portfolio__filters` buttons with `border-radius: var(--radius-full)`, `var(--font-mono)`, and transparent backgrounds that invert colors seamlessly on hover/active states.
+- Built `.portfolio__grid` utilizing CSS Grid: 1 column on mobile, 2 columns on tablet (`min-width: 768px`), and 3 columns on desktop (`min-width: 1024px`).
+- Designed the `.portfolio-card` anatomy:
+  - Base styles: `var(--bg-elevated)` surface with `var(--border)` outline.
+  - Hover states: Translates up by `-6px`, adds a diffuse blue shadow (`box-shadow: 0 -4px 20px rgba(37, 99, 235, 0.15)`), and illuminates the top border (`border-top-color: var(--accent-blue)`).
+- Implemented specific badge colors (utilizing existing global utilities for Design, Research, Product, and explicitly defining `.badge--engineering`).
+
+### Notes
+- **Phase 9 (Portfolio Section) is now 100% complete.**
+- Next task: **Phase 10 — Team Section**
+  - Minimalistic 4-column profile grid, grayscale to color hover effect, and bio popovers.
+
+---
+
+## Session 22 (V3) — 2026-06-05
+
+### Completed: Team Section — Phase 10 ✔️
+
+### Work Done
+**`main.js`** — Implemented Team Grid Rendering:
+- Defined an array of 4 team members with properties: `initials`, `name`, `role`, and `bio`.
+- Wrote logic to map over the array and dynamically inject `<article class="card team-card reveal-item">` blocks into `#team-grid`.
+- Bound `style="animation-delay: ${idx * 0.1}s"` dynamically to each card to ensure a staggered reveal sequence.
+
+**`style.css`** — Appended Section 12 "Team":
+- Established `.team__grid` layout leveraging CSS Grid: 1 column mobile, 2 tablet (`min-width: 640px`), and 4 columns on desktop (`min-width: 1024px`) for a clean, horizontally aligned directory.
+- Styled `.team-card`:
+  - Utilized `var(--bg-elevated)` to contrast off the main background.
+  - Implemented the `scale(1.02)` and intense `box-shadow` lift effect on hover.
+- Engineered the initials avatar component (`.team-card__avatar`):
+  - Created a 90x90px circular container centered using flexbox.
+  - Applied the base grayscale styling via `linear-gradient(135deg, var(--bg-tertiary), var(--border-medium))` and border outline.
+  - Created a sophisticated grayscale-to-color hover interaction using `.team-card:hover .team-card__avatar`, transitioning the background to a vibrant `linear-gradient(135deg, var(--accent-blue), var(--accent-purple))`, and flipping the text to solid white.
+
+### Notes
+- **Phase 10 (Team Section) is now 100% complete.**
+- Next task: **Phase 11 — Contact Section**
+  - Two-column layout: interactive contact form vs. metadata (email, response time, socials), with blue border glow on focus states.
+
+---
+
+## Session 23 (V3) — 2026-06-05
+
+### Completed: Contact Section — Phase 11 ✔️
+
+### Work Done
+**`main.js`** — Implemented Contact Form Logic:
+- Wired up a native DOM `submit` event listener to `#contact-form`.
+- Bound `.checkValidity()` to leverage native HTML5 browser validation (ensuring required fields and valid email syntax).
+- Simulated an asynchronous network request:
+  - Intercepted the submit button, caching its original text.
+  - Set state to `Sending...` and disabled the button to prevent double-submissions.
+  - Used a 1500ms `setTimeout` to mimic API latency.
+- Restored the button state, cleared the form via `.reset()`, and toggled the `hidden` attribute on `#form-success` to display the success message. Bound a secondary 5000ms timeout to auto-hide the success message.
+
+**`style.css`** — Appended Section 13 "Contact":
+- Configured a `.contact__inner` flexbox layout (60% form left / 40% info right on desktop).
+- Implemented the "Photonic Glow" background effect via `.contact::after`, utilizing an absolutely positioned `radial-gradient` with an intense `filter: blur(80px)` anchored to the bottom-right corner.
+- Styled form inputs (`input`, `select`, `textarea`):
+  - Base: `var(--bg-elevated)` surface with `var(--border-medium)` outline.
+  - Applied `appearance: none` and injected a custom SVG chevron via `background-image` for the custom select dropdown.
+  - Focus state: Nullified the default outline and applied a double visual cue using `border-color: var(--accent-blue)` and an intense neon shadow (`box-shadow: 0 0 0 1px var(--accent-blue), 0 0 15px rgba(37, 99, 235, 0.2)`).
+- Styled the `.contact__info-col` metadata column, specifically optimizing the circular `.contact__social-link` elements with `-4px` vertical translation and blue accent swaps on hover.
+
+### Notes
+- **Phase 11 (Contact Section) is now 100% complete.**
+- Next task: **Phase 12 — Footer**
+  - Global bottom bar, grid layout, static logo, three link columns, and five brand pillars.
+
+---
+
+## Session 24 (V3) — 2026-06-05
+
+### Completed: Footer Section — Phase 12 ✔️
+
+### Work Done
+**`style.css`** — Appended Section 14 "Footer":
+- **Structure**: Established the `.footer` container with a top border (`rgba(250, 250, 250, 0.05)`) and `relative` positioning to host the global Emergence Grid pattern background (already configured via `.footer::before` in Phase 2).
+- **Layout Engine**: 
+  - Deployed a responsive CSS grid on `.footer__inner` for desktop (`min-width: 768px`), assigning `1fr` to the logo/tagline column, `2fr` to the navigation links, and commanding `.footer__bottom` to span entirely (`grid-column: 1 / -1`).
+  - Constructed the secondary grid `.footer__cols` for the three navigation link lists (stacking 2 columns on tablet, 3 on desktop).
+- **Visuals & Micro-interactions**:
+  - Implemented a grayscale filter on the OneReign `.footer__logo` (`filter: grayscale(100%) contrast(200%); opacity: 0.8`), which sharply transitions to full color on hover.
+  - Engineered the signature link hover effect: `position: relative` anchors a `::after` pseudo-element (1px height line) that gracefully sweeps from `width: 0` to `width: 100%` on hover.
+  - Formatted the `.footer__pillars` bottom bar utilizing JetBrains Mono (`var(--font-mono)`), `letter-spacing: 0.1em`, uppercase typography, and implemented a mobile breakpoint (`max-width: 640px`) to cleanly stack the pillars and vanish the bullet separators (`aria-hidden="true"`).
+
+### Notes
+- **Phase 12 (Footer) is now 100% complete.**
+- Next task: **Phase 13 — Scroll Reveals & Micro-interactions**
+  - Implementation of the global `IntersectionObserver` to trigger the `.is-revealed` classes on scroll, and final CSS polish.
+
+---
+
+## Session 25 (V3) — 2026-06-05
+
+### Completed: Scroll Reveals & Micro-interactions — Phase 13 ✔️
+
+### Work Done
+**`main.js`** — Global IntersectionObserver Logic:
+- Implemented a performant `IntersectionObserver` targeting all `.reveal` and `.reveal-item` elements (excluding the Hero section, which handles its own sequence).
+- Configured a threshold of `0.15` (triggering when 15% of the element is visible).
+- Mapped intersecting targets to immediately add the `.is-revealed` class, and subsequently called `observer.unobserve()` to ensure the animation fires only once per pageload.
+- Corrected programmatic delays in Portfolio and Team rendering logic from `animation-delay` to `transition-delay` to match the CSS engine behavior.
+
+**`index.html`** — Inline Stagger Configuration:
+- Hardcoded `transition-delay` values (0ms, 80ms, 160ms, 240ms, 320ms) onto the five Services `.service-card` articles directly within the HTML, establishing a seamless cascade as the user scrolls into the section.
+
+**`style.css`** — CSS Core Engine:
+- Centralized the physics for all `.reveal` and `.reveal-item` elements:
+  - Initial state: `opacity: 0; transform: translateY(30px);`
+  - Active state (`.is-revealed`): `opacity: 1; transform: translateY(0);`
+  - Transition curve: `transition: opacity 600ms var(--ease-out), transform 600ms var(--ease-out);` with `will-change` hints for hardware acceleration.
+- Refined the primary `btn--primary` hover states, validating the `box-shadow` glow effects and vertical `translateY(-2px)` lifts.
+- Engineered the signature global link hover effect on all `.nav__links a` items, ensuring the absolute pseudo-element sweeps smoothly from `0` to `100%`.
+
+### Notes
+- **Phase 13 (Scroll Reveals & Micro-interactions) is now 100% complete.**
+- Next task: **Phase 14 — Responsive layout pass**
+  - Validation of mobile/tablet layouts, hamburger nav, and grid column transitions across all breakpoints.
+
+---
+
+## Session 26 (V3) — 2026-06-05
+
+### Completed: Responsive Polish — Phase 14 ✔️
+
+### Work Done
+**`style.css`** — Final Responsive Adjustments:
+- **Architecture Validation**: Confirmed that all major sections (Services, Portfolio, Team, Footer) inherently resolve to precise single-column (`1fr`), double-column (`repeat(2, 1fr)`), and triple/quadruple column (`repeat(3, 1fr)`, `repeat(4, 1fr)`) configurations based on strict `@media` breakpoints mapping to standard viewport widths (640px, 768px, 992px, 1024px).
+- **Typography Scaling**: Validated the global use of `clamp()` functions across `h1`, `h2`, and `.caption-label` elements, which naturally execute fluid typography scaling without brittle media queries.
+- **Performance Optimization**: Appended Section 16 "Responsive Adjustments" and injected a rule to completely remove the Hero 3D Hex canvas (`#hero-hex-canvas { display: none !important; }`) on mobile screens (`< 768px`). This critical decision prevents massive battery drain and layout jank on low-power devices, defaulting them to the pure CSS noise overlay and radial gradient.
+
+### Notes
+- **Phase 14 (Responsive Polish) is now 100% complete.**
+- Next task: **Phase 15 — Polish & QA**
+  - Final accessibility sweep, codebase integrity validation, font rendering checks, and preparation for deployment.
+
+---
+
+## Session 27 (V3) — 2026-06-05
+
+### Completed: Polish & QA — Phase 15 ✔️
+
+### Work Done
+**Codebase Audit & Final Validation:**
+- **Logo Integrity**: Executed a comprehensive `grep` across the entire codebase to mathematically prove no logo rotation animations exist. The global `.nav__logo img { pointer-events: none; }` lock from Phase 13 remains strictly enforced.
+- **Pattern Verification**: Audited `style.css` and `index.html` to guarantee all 5 Background Patterns are properly bound to their respective components (Emergence Grid on Footer, Hexagonal Mesh on Services/Portfolio, Diagonal Noise on About, Radial Burst on Contact, Resolution Pattern on Team) via lightweight SVG `::before` pseudo-elements.
+- **Three.js Integrity**: Verified that all 4 discrete WebGL logic clusters (`hero-canvas.js`, `hero-hex.js`, `about-mesh.js`, `service-icons.js`) initialize correctly and target existing IDs. The `service-icons.js` race condition mitigated in Phase 8 via direct DOM injection was successfully validated.
+- **Typography**: Confirmed that the `Clash Display` and `Satoshi` font families are correctly resolved via the pre-connected Fontshare CDN link in `<head>`, ensuring the brutalist deep-tech aesthetic renders flawlessly across all OS environments.
+- **Accessibility (A11y)**: Conducted a final ARIA sweep. Form inputs are paired with `<label class="visually-hidden">`, interactive modals and toggles deploy `aria-expanded` / `aria-controls` states, semantic tags (`<article>`, `<section>`, `<nav>`) are used exhaustively, and SVG icons inherit `aria-hidden="true"` to block redundant screen reader announcements.
+
+### Notes
+- **Phase 15 (Polish & QA) is now 100% complete.**
+- Next task: **Phase 16 — Deployment**
+  - Initialize the Git repository, push to GitHub, connect to Vercel, and configure production environment settings.

@@ -53,9 +53,9 @@
 - [x] Cross-browser testing — svh→vh fallbacks (4×), IO feature detection + fallback, clip→clip-path, webkit-autofill override; backdrop-filter/-webkit- already present
 
 ## Phase 7 — Deployment
-- [ ] Choose hosting (Vercel / Netlify / GitHub Pages)
+- [x] Choose hosting — **Vercel** (static site, zero-config, GitHub auto-deploy)
 - [ ] Set up domain (onereign.ai or similar)
-- [ ] Deploy production build
+- [x] Deploy production build — **https://onereign-website.vercel.app** (live)
 - [ ] Configure OG tags and meta for social sharing
 
 ---
@@ -69,4 +69,4 @@
 
 ---
 
-_Last updated: 2026-06-05 (Session 18)_
+_Last updated: 2026-06-05 (Session 19)_
