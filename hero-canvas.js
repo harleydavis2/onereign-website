@@ -2,38 +2,29 @@
  * OneReign — hero-canvas.js  (V3)
  * Element 1: Hero Particle Field
  *
- * Full-viewport WebGL canvas, fixed behind the hero.
- * - 120 drifting nodes (blue spheres, 0.5 opacity)
- * - LineSegments connecting nodes within 150 units (white, 6% opacity)
- * - Mouse pull: nearest 15 nodes lerp toward cursor (factor 0.015)
- * - Fades to opacity 0 as user scrolls past hero height
- *
- * Populated in: Phase 3, Element 1
+ * Spec (ONEREIGN_AGENT_PROMPT_V3.md):
+ * - Full-viewport WebGL canvas, position fixed behind hero, z-index: 0
+ * - 120 nodes: SphereGeometry(0.8), MeshBasicMaterial color #2563EB, opacity 0.5
+ * - Nodes drift in 3D with random velocity vectors, speed 0.0003
+ * - LineSegments between nodes closer than 150 units: LineBasicMaterial #FAFAFA, opacity 0.06
+ * - On mousemove: nearest 15 nodes lerp toward cursor (factor 0.015)
+ * - Canvas opacity → 0 as user scrolls past hero height
  */
 
 document.addEventListener('DOMContentLoaded', () => {
   const canvas = document.getElementById('hero-canvas');
   if (!canvas || typeof THREE === 'undefined') return;
 
-  // Apply fixed background styling directly
+  // ── Canvas Styling — spec: position fixed, full viewport, z-index 0 ──
   canvas.style.position = 'fixed';
   canvas.style.top = '0';
   canvas.style.left = '0';
   canvas.style.width = '100vw';
   canvas.style.height = '100vh';
-  canvas.style.zIndex = '-1';
-  canvas.style.pointerEvents = 'none'; // Let window capture mouse
+  canvas.style.zIndex = '0';            // spec: 0, not -1
+  canvas.style.pointerEvents = 'none';
 
-  const config = {
-    particleCount: 120,
-    maxDistance: 150,
-    mousePullFactor: 0.015,
-    colors: {
-      nodes: 0x2563EB, // --accent-blue
-      lines: 0xFAFAFA  // --text-primary
-    }
-  };
-
+  // ── Scene ──
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
   camera.position.z = 400;
@@ -42,148 +33,150 @@ document.addEventListener('DOMContentLoaded', () => {
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-  // ── Particles Setup ──
-  const particles = [];
-  const positions = new Float32Array(config.particleCount * 3);
+  // ── Nodes — spec: SphereGeometry(0.8), #2563EB, opacity 0.5 ──
+  const NODE_COUNT = 120;
+  const MAX_DIST = 150;
+  const SPEED = 0.0003;
 
-  const nodeGeometry = new THREE.SphereGeometry(2, 8, 8);
-  const nodeMaterial = new THREE.MeshBasicMaterial({ 
-    color: config.colors.nodes, 
-    transparent: true, 
-    opacity: 0.5 
+  const nodeGeo = new THREE.SphereGeometry(0.8, 6, 6);
+  const nodeMat = new THREE.MeshBasicMaterial({
+    color: 0x2563EB,
+    transparent: true,
+    opacity: 0.5
   });
-  
-  const nodes = new THREE.InstancedMesh(nodeGeometry, nodeMaterial, config.particleCount);
-  const dummy = new THREE.Object3D();
 
-  for (let i = 0; i < config.particleCount; i++) {
-    const x = (Math.random() - 0.5) * window.innerWidth * 1.5;
-    const y = (Math.random() - 0.5) * window.innerHeight * 1.5;
-    const z = (Math.random() - 0.5) * 500;
-    
-    // Random velocity
-    const vx = (Math.random() - 0.5) * 0.5;
-    const vy = (Math.random() - 0.5) * 0.5;
-    const vz = (Math.random() - 0.5) * 0.5;
-    
-    particles.push({ 
-      current: new THREE.Vector3(x, y, z), 
-      v: new THREE.Vector3(vx, vy, vz) 
-    });
-    
-    dummy.position.set(x, y, z);
-    dummy.updateMatrix();
-    nodes.setMatrixAt(i, dummy.matrix);
-  }
-  
+  const nodes = new THREE.InstancedMesh(nodeGeo, nodeMat, NODE_COUNT);
   nodes.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
   scene.add(nodes);
 
-  // ── Lines Setup ──
-  const lineMaterial = new THREE.LineBasicMaterial({
-    color: config.colors.lines,
+  const dummy = new THREE.Object3D();
+
+  // Bounds — particles fill 1.5× viewport in world space
+  const boundX = window.innerWidth * 0.75;
+  const boundY = window.innerHeight * 0.75;
+  const boundZ = 300;
+
+  // Particle state
+  const positions = [];
+  const velocities = [];
+
+  for (let i = 0; i < NODE_COUNT; i++) {
+    positions.push(new THREE.Vector3(
+      (Math.random() - 0.5) * boundX * 2,
+      (Math.random() - 0.5) * boundY * 2,
+      (Math.random() - 0.5) * boundZ * 2
+    ));
+
+    // spec: speed 0.0003 — scale to world bounds for gentle drift
+    velocities.push(new THREE.Vector3(
+      (Math.random() - 0.5) * 2 * boundX * SPEED,
+      (Math.random() - 0.5) * 2 * boundY * SPEED,
+      (Math.random() - 0.5) * 2 * boundZ * SPEED
+    ));
+
+    dummy.position.copy(positions[i]);
+    dummy.updateMatrix();
+    nodes.setMatrixAt(i, dummy.matrix);
+  }
+
+  // ── Lines — spec: LineBasicMaterial #FAFAFA, opacity 0.06 ──
+  const lineMat = new THREE.LineBasicMaterial({
+    color: 0xFAFAFA,
     transparent: true,
     opacity: 0.06
   });
-  
-  const lineGeometry = new THREE.BufferGeometry();
-  const maxLines = (config.particleCount * (config.particleCount - 1)) / 2;
-  const linePositions = new Float32Array(maxLines * 6);
-  lineGeometry.setAttribute('position', new THREE.BufferAttribute(linePositions, 3).setUsage(THREE.DynamicDrawUsage));
-  
-  const linesMesh = new THREE.LineSegments(lineGeometry, lineMaterial);
-  scene.add(linesMesh);
+
+  const maxPairs = (NODE_COUNT * (NODE_COUNT - 1)) / 2;
+  const linePositions = new Float32Array(maxPairs * 6);
+  const lineGeo = new THREE.BufferGeometry();
+  const lineAttr = new THREE.BufferAttribute(linePositions, 3);
+  lineAttr.setUsage(THREE.DynamicDrawUsage);
+  lineGeo.setAttribute('position', lineAttr);
+
+  const lineMesh = new THREE.LineSegments(lineGeo, lineMat);
+  scene.add(lineMesh);
 
   // ── Mouse Interaction ──
-  const mouse = new THREE.Vector2(-9999, -9999);
+  const mouse2D = new THREE.Vector2(-99999, -99999);
   const mouse3D = new THREE.Vector3();
   const raycaster = new THREE.Raycaster();
   const plane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
-  
+
   window.addEventListener('pointermove', (e) => {
-    mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
-    mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
-    raycaster.setFromCamera(mouse, camera);
+    mouse2D.x =  (e.clientX / window.innerWidth)  * 2 - 1;
+    mouse2D.y = -(e.clientY / window.innerHeight) * 2 + 1;
+    raycaster.setFromCamera(mouse2D, camera);
     raycaster.ray.intersectPlane(plane, mouse3D);
   });
 
-  // Reset mouse on leave so nodes don't bunch up in the corner
   window.addEventListener('pointerleave', () => {
-    mouse.set(-9999, -9999);
+    mouse2D.set(-99999, -99999);
   });
 
-  // ── Scroll Fade ──
+  // ── Scroll Fade — spec: opacity → 0 as user scrolls past hero height ──
   window.addEventListener('scroll', () => {
-    const scrollY = window.scrollY;
-    const fadeHeight = window.innerHeight;
-    let opacity = 1 - (scrollY / fadeHeight);
-    canvas.style.opacity = Math.max(0, Math.min(1, opacity)).toString();
+    const heroHeight = window.innerHeight;
+    const ratio = Math.max(0, Math.min(1, 1 - (window.scrollY / heroHeight)));
+    canvas.style.opacity = ratio.toString();
   });
 
   // ── Animation Loop ──
   function animate() {
     requestAnimationFrame(animate);
-    
-    let lineIndex = 0;
-    
-    // Find nearest 15 nodes to mouse
-    let nearest15 = new Set();
-    if (mouse.x !== -9999) {
-      const distances = particles.map((p, index) => ({
-        index,
-        distSq: p.current.distanceToSquared(mouse3D)
-      }));
-      distances.sort((a, b) => a.distSq - b.distSq);
-      nearest15 = new Set(distances.slice(0, 15).map(d => d.index));
+
+    // Find nearest 15 nodes to mouse cursor
+    const nearest15 = new Set();
+    if (mouse2D.x !== -99999) {
+      const dists = positions.map((p, i) => ({ i, d: p.distanceToSquared(mouse3D) }));
+      dists.sort((a, b) => a.d - b.d);
+      dists.slice(0, 15).forEach(({ i }) => nearest15.add(i));
     }
 
-    const boundX = window.innerWidth * 0.8;
-    const boundY = window.innerHeight * 0.8;
+    let lineIdx = 0;
 
-    for (let i = 0; i < config.particleCount; i++) {
-      const p = particles[i];
-      
-      p.current.add(p.v);
-      
-      // Soft boundary bounce
-      if (p.current.x > boundX || p.current.x < -boundX) p.v.x *= -1;
-      if (p.current.y > boundY || p.current.y < -boundY) p.v.y *= -1;
-      if (p.current.z > 250 || p.current.z < -250) p.v.z *= -1;
+    for (let i = 0; i < NODE_COUNT; i++) {
+      const p = positions[i];
+      const v = velocities[i];
 
-      // Mouse Pull
+      // Drift
+      p.add(v);
+
+      // Boundary bounce
+      if (p.x >  boundX || p.x < -boundX) v.x *= -1;
+      if (p.y >  boundY || p.y < -boundY) v.y *= -1;
+      if (p.z >  boundZ || p.z < -boundZ) v.z *= -1;
+
+      // Mouse pull — spec: nearest 15 lerp toward cursor, factor 0.015
       if (nearest15.has(i)) {
-        p.current.lerp(mouse3D, config.mousePullFactor);
+        p.lerp(mouse3D, 0.015);
       }
 
-      dummy.position.copy(p.current);
+      // Update instanced mesh
+      dummy.position.copy(p);
       dummy.updateMatrix();
       nodes.setMatrixAt(i, dummy.matrix);
-      
-      // Calculate connecting lines
-      for (let j = i + 1; j < config.particleCount; j++) {
-        const p2 = particles[j];
-        const distSq = p.current.distanceToSquared(p2.current);
-        
-        if (distSq < config.maxDistance * config.maxDistance) {
-          linePositions[lineIndex++] = p.current.x;
-          linePositions[lineIndex++] = p.current.y;
-          linePositions[lineIndex++] = p.current.z;
-          linePositions[lineIndex++] = p2.current.x;
-          linePositions[lineIndex++] = p2.current.y;
-          linePositions[lineIndex++] = p2.current.z;
+
+      // Build line segments to closer nodes
+      for (let j = i + 1; j < NODE_COUNT; j++) {
+        if (p.distanceToSquared(positions[j]) < MAX_DIST * MAX_DIST) {
+          linePositions[lineIdx++] = p.x;
+          linePositions[lineIdx++] = p.y;
+          linePositions[lineIdx++] = p.z;
+          linePositions[lineIdx++] = positions[j].x;
+          linePositions[lineIdx++] = positions[j].y;
+          linePositions[lineIdx++] = positions[j].z;
         }
       }
     }
-    
+
     nodes.instanceMatrix.needsUpdate = true;
-    
-    lineGeometry.setDrawRange(0, lineIndex / 3);
-    lineGeometry.attributes.position.needsUpdate = true;
+    lineGeo.setDrawRange(0, lineIdx / 3);
+    lineGeo.attributes.position.needsUpdate = true;
 
     renderer.render(scene, camera);
   }
 
-  // ── Resize Handler ──
+  // ── Resize ──
   window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
