@@ -121,4 +121,4 @@
 
 ---
 
-_Last updated: 2026-06-05 — V3_
+_Last updated: 2026-06-06 — V3 (Session 36 — Phases 5–15 synced)_

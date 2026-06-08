@@ -1,17 +1,42 @@
 /**
  * OneReign — main.js  (V3)
  *
- * Sections (populated per TODO_V3.md phases):
- *   - Navigation: hamburger, scroll behaviour
- *   - Hero: entrance animation sequence
- *   - Services: render service cards
- *   - Portfolio: render project cards, filter logic, modal
- *   - Team: render team cards
- *   - Contact: form validation & submission
- *   - Scroll reveals: IntersectionObserver
+ * Execution order matters — revealObserver is declared FIRST
+ * so all render callbacks can safely reference it.
  */
 
 document.addEventListener('DOMContentLoaded', () => {
+
+  // ── SCROLL REVEALS (declared first — used by render functions below) ────
+  // Targets .reveal (section headings) and .reveal-item (static items in DOM)
+  // Hero items are excluded — they use their own stagger sequence.
+  const revealElements = document.querySelectorAll(
+    '.reveal, .services .reveal-item, .about .reveal-item'
+  );
+
+  const revealObserver = 'IntersectionObserver' in window
+    ? new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-revealed');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { root: null, rootMargin: '0px', threshold: 0.12 })
+    : null;
+
+  const observeOrReveal = (elements) => {
+    elements.forEach(el => {
+      if (revealObserver) {
+        revealObserver.observe(el);
+      } else {
+        el.classList.add('is-revealed');
+      }
+    });
+  };
+
+  // Register static reveal targets
+  observeOrReveal(revealElements);
 
   // ── NAVIGATION ──────────────────────────────────────────
   const nav = document.getElementById('nav');
@@ -19,13 +44,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const mobileOverlay = document.getElementById('nav-links');
   const mobileLinks = document.querySelectorAll('.nav__mobile-links a');
 
-  // Scroll behavior: border visibility
+  // Scroll behavior: border becomes more visible past 80px
   window.addEventListener('scroll', () => {
-    if (window.scrollY > 80) {
-      nav.classList.add('nav--scrolled');
-    } else {
-      nav.classList.remove('nav--scrolled');
-    }
+    nav.classList.toggle('nav--scrolled', window.scrollY > 80);
   });
 
   // Mobile Hamburger Menu Toggle
@@ -34,17 +55,15 @@ document.addEventListener('DOMContentLoaded', () => {
       const isActive = hamburger.classList.contains('is-active');
       hamburger.classList.toggle('is-active');
       mobileOverlay.classList.toggle('is-active');
-      hamburger.setAttribute('aria-expanded', !isActive);
+      hamburger.setAttribute('aria-expanded', String(!isActive));
+      mobileOverlay.setAttribute('aria-hidden', String(isActive));
     };
 
     hamburger.addEventListener('click', toggleMenu);
 
-    // Close menu when clicking a link
     mobileLinks.forEach(link => {
       link.addEventListener('click', () => {
-        if (hamburger.classList.contains('is-active')) {
-          toggleMenu();
-        }
+        if (hamburger.classList.contains('is-active')) toggleMenu();
       });
     });
   }
@@ -52,20 +71,16 @@ document.addEventListener('DOMContentLoaded', () => {
   // ── HERO ENTRANCE ANIMATION ──────────────────────────────
   const heroRevealItems = document.querySelectorAll('.hero .reveal-item');
   if (heroRevealItems.length > 0) {
-    // Wait for the logo to fade in first (or run concurrently)
     setTimeout(() => {
       heroRevealItems.forEach((item, index) => {
         setTimeout(() => {
           item.classList.add('is-revealed');
-        }, index * 80); // 80ms stagger
+        }, index * 80);
       });
-    }, 300); // 300ms initial delay
+    }, 300);
   }
 
-  // ── SERVICES RENDER ─────────────────────────────────────
-  // Populated in Phase 8
-
-  // ── PORTFOLIO RENDER + FILTER + MODAL ───────────────────
+  // ── PORTFOLIO RENDER + FILTER ────────────────────────────
   const portfolioGrid = document.getElementById('portfolio-grid');
   const filterBtns = document.querySelectorAll('.filter-btn');
 
@@ -129,14 +144,13 @@ document.addEventListener('DOMContentLoaded', () => {
   if (portfolioGrid) {
     const renderProjects = (filterStr) => {
       portfolioGrid.innerHTML = '';
-      const filtered = filterStr === 'all' 
-        ? projects 
+      const filtered = filterStr === 'all'
+        ? projects
         : projects.filter(p => p.category === filterStr);
 
       filtered.forEach((p, idx) => {
         const gradient = `background: linear-gradient(135deg, rgba(250,250,250,0.02), rgba(250,250,250,0.08));`;
-        
-        const cardHTML = `
+        portfolioGrid.innerHTML += `
           <article class="card portfolio-card reveal-item" style="transition-delay: ${idx * 80}ms">
             <div class="portfolio-card__thumb" style="${gradient}"></div>
             <div class="portfolio-card__content">
@@ -150,20 +164,16 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
           </article>
         `;
-        portfolioGrid.innerHTML += cardHTML;
       });
 
-      // Trigger staggered animation for newly rendered cards
+      // Register newly injected cards with the observer (or reveal immediately)
       setTimeout(() => {
-        const newItems = portfolioGrid.querySelectorAll('.reveal-item');
-        newItems.forEach(item => item.classList.add('is-revealed'));
+        observeOrReveal(portfolioGrid.querySelectorAll('.reveal-item'));
       }, 50);
     };
 
-    // Initial render
     renderProjects('all');
 
-    // Filter logic
     filterBtns.forEach(btn => {
       btn.addEventListener('click', () => {
         filterBtns.forEach(b => {
@@ -219,6 +229,11 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
       </article>
     `).join('');
+
+    // Register newly injected team cards with the observer
+    setTimeout(() => {
+      observeOrReveal(teamGrid.querySelectorAll('.reveal-item'));
+    }, 50);
   }
 
   // ── CONTACT FORM ────────────────────────────────────────
@@ -228,13 +243,9 @@ document.addEventListener('DOMContentLoaded', () => {
   if (contactForm && formSuccess) {
     contactForm.addEventListener('submit', (e) => {
       e.preventDefault();
-      
-      // Basic validation (browser handles required attributes)
-      if (!contactForm.checkValidity()) {
-        return;
-      }
 
-      // Simulate network request
+      if (!contactForm.checkValidity()) return;
+
       const submitBtn = document.getElementById('contact-submit');
       const originalText = submitBtn.textContent;
       submitBtn.textContent = 'Sending...';
@@ -244,38 +255,10 @@ document.addEventListener('DOMContentLoaded', () => {
         submitBtn.textContent = originalText;
         submitBtn.disabled = false;
         contactForm.reset();
-        
-        // Show success message
         formSuccess.hidden = false;
-        
-        // Hide success message after 5 seconds
-        setTimeout(() => {
-          formSuccess.hidden = true;
-        }, 5000);
+        setTimeout(() => { formSuccess.hidden = true; }, 5000);
       }, 1500);
     });
   }
-
-  // ── SCROLL REVEALS ──────────────────────────────────────
-  const revealElements = document.querySelectorAll('.reveal, .reveal-item:not(.hero .reveal-item)');
-  
-  const revealOptions = {
-    root: null,
-    rootMargin: '0px',
-    threshold: 0.15
-  };
-
-  const revealObserver = new IntersectionObserver((entries, observer) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('is-revealed');
-        observer.unobserve(entry.target);
-      }
-    });
-  }, revealOptions);
-
-  revealElements.forEach(el => {
-    revealObserver.observe(el);
-  });
 
 });

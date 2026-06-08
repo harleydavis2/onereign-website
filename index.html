@@ -27,7 +27,7 @@
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 
   <!-- Logo preload -->
-  <link rel="preload" href="assets/logotransparent.png" as="image" fetchpriority="high" />
+  <link rel="preload" href="assets/logo-mark.png" as="image" fetchpriority="high" />
 
   <!-- Stylesheet -->
   <link rel="stylesheet" href="style.css" />
@@ -44,7 +44,11 @@
   <header class="nav" id="nav" role="banner">
     <div class="nav__inner container">
       <a href="#" class="nav__logo" aria-label="OneReign home">
-        <img src="assets/logotransparent.png" alt="OneReign logo" width="36" height="36" fetchpriority="high" />
+        <img src="assets/logo-mark.png" alt="OneReign logo" width="52" height="52" fetchpriority="high" style="object-fit: contain;" />
+        <div class="nav__wordmark" aria-hidden="true">
+          <span class="nav__wordmark-name">OneReign</span>
+          <span class="nav__wordmark-tag">Where Possibility Becomes Inevitable</span>
+        </div>
       </a>
       <nav aria-label="Primary navigation">
         <ul class="nav__links" role="list">

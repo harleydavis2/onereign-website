@@ -2,118 +2,126 @@
  * OneReign — about-mesh.js  (V3)
  * Element 4: About Section Mesh Background
  *
- * Undulating sine-wave wireframe plane behind the About section.
+ * Spec (ONEREIGN_AGENT_PROMPT_V3.md):
  * - Canvas: full width × height of .about section, position absolute, z-index 0
- * - PlaneGeometry(2000, 800, 40, 20)
- * - Per-frame vertex displacement:
- *     vertex.y = sin(vertex.x * 0.01 + time) * 15
- *              + cos(vertex.z * 0.01 + time * 0.7) * 10
- * - Material: MeshBasicMaterial, blue wireframe, 7% opacity
- * - Camera: PerspectiveCamera tilted down at 45°
+ * - Geometry: PlaneGeometry(2000, 800, 40, 20) — flat on XZ plane
+ * - Per-frame vertex Y displacement:
+ *     vertex.y = sin(vertex.x * 0.01 + time) * 15 + cos(vertex.z * 0.01 + time * 0.7) * 10
+ * - Material: MeshBasicMaterial, color 0x2563EB, wireframe true, opacity 0.07
+ * - Camera: PerspectiveCamera tilted down at 45° — looks straight down at mesh
+ * - No lighting needed (wireframe ignores it)
  * - time += 0.003 per frame
- *
- * Populated in: Phase 3, Element 4
+ * - Only animates when the .about section is visible (IntersectionObserver)
  */
 
 document.addEventListener('DOMContentLoaded', () => {
   const canvas = document.getElementById('about-canvas');
-  const container = canvas ? canvas.closest('.about') : null;
-  
-  if (!canvas || !container || typeof THREE === 'undefined') return;
+  const section = document.querySelector('.about');
+  if (!canvas || !section || typeof THREE === 'undefined') return;
 
-  // 1. Setup styling for canvas
+  // ── Canvas Styling ──
   canvas.style.position = 'absolute';
   canvas.style.top = '0';
   canvas.style.left = '0';
   canvas.style.width = '100%';
   canvas.style.height = '100%';
   canvas.style.zIndex = '0';
-  canvas.style.pointerEvents = 'none'; // Don't block text
+  canvas.style.pointerEvents = 'none';
 
-  // 2. Setup Scene
+  // ── Scene ──
   const scene = new THREE.Scene();
-  
-  const rect = container.getBoundingClientRect();
-  const camera = new THREE.PerspectiveCamera(45, rect.width / rect.height, 0.1, 3000);
-  
-  // Position camera so it looks down at 45deg
-  camera.position.set(0, 300, 400);
-  camera.lookAt(0, 0, -200);
 
-  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-  renderer.setSize(rect.width, rect.height);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  const rect = section.getBoundingClientRect();
+  const w = rect.width  || window.innerWidth;
+  const h = rect.height || 600;
 
-  // 3. Geometry & Material
-  // We'll create the plane and rotate it so it lies flat on XZ plane.
-  // In local coords, PlaneGeometry is on XY.
+  // Camera tilted down at exactly 45° — positioned equal Y and Z above/behind origin
+  const camera = new THREE.PerspectiveCamera(60, w / h, 1, 5000);
+  camera.position.set(0, 600, 600);  // equal y and z → 45° downward tilt
+  camera.lookAt(0, 0, 0);
+
+  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: false });
+  renderer.setSize(w, h);
+  renderer.setPixelRatio(1); // fixed pixel ratio for performance on a background element
+
+  // ── Geometry — PlaneGeometry lies on XZ plane ──
+  // PlaneGeometry by default is on XY plane — rotate -90° on X to lay it flat on XZ
   const geometry = new THREE.PlaneGeometry(2000, 800, 40, 20);
-  
+  geometry.rotateX(-Math.PI / 2); // now: X stays X, Y (local) becomes Z (world), Z (local) becomes Y (world, down)
+
   const material = new THREE.MeshBasicMaterial({
-    color: 0x2563EB, // --accent-blue
+    color: 0x2563EB,
     wireframe: true,
     transparent: true,
     opacity: 0.07
   });
-  
+
   const mesh = new THREE.Mesh(geometry, material);
-  mesh.rotation.x = -Math.PI / 2; // Flat on the floor
-  // Shift it slightly down
-  mesh.position.y = -100;
   scene.add(mesh);
 
-  // We need the original positions to calculate displacement cleanly
-  const positionAttribute = geometry.getAttribute('position');
-  const initialPositions = new Float32Array(positionAttribute.array);
-
+  // Store original vertex positions for clean displacement each frame
+  const posAttr = geometry.getAttribute('position');
+  const origPositions = new Float32Array(posAttr.array);
   let time = 0;
 
-  // 4. Animation Loop
-  function animate() {
-    requestAnimationFrame(animate);
+  // ── Animation Loop ──
+  let rafId = null;
 
+  function animate() {
+    rafId = requestAnimationFrame(animate);
     time += 0.003;
 
-    for (let i = 0; i < positionAttribute.count; i++) {
-      // Local coordinates of PlaneGeometry are x and y
-      const x = initialPositions[i * 3];
-      const y = initialPositions[i * 3 + 1]; 
-      
-      // Calculate new Z (which points up after rotating the mesh)
-      const newZ = Math.sin(x * 0.01 + time) * 15 + Math.cos(y * 0.01 + time * 0.7) * 10;
-      
-      positionAttribute.setZ(i, newZ);
+    // Apply spec displacement formula to each vertex
+    // After rotateX(-PI/2): local X → world X, local Z → world Z (down), local Y → world -Z
+    // The plane vertices have their world X and Z we need for the sine formula
+    for (let i = 0; i < posAttr.count; i++) {
+      const ox = origPositions[i * 3];     // world X (unchanged by rotation)
+      const oz = origPositions[i * 3 + 2]; // original local Z, now maps to world Z
+
+      // spec: vertex.y = sin(vertex.x * 0.01 + time) * 15 + cos(vertex.z * 0.01 + time*0.7) * 10
+      const dy = Math.sin(ox * 0.01 + time) * 15
+               + Math.cos(oz * 0.01 + time * 0.7) * 10;
+
+      posAttr.setY(i, dy);
     }
-    
-    positionAttribute.needsUpdate = true;
+
+    posAttr.needsUpdate = true;
+    geometry.computeVertexNormals(); // keeps wireframe looking clean
 
     renderer.render(scene, camera);
   }
 
-  // 5. Intersection Observer to only animate when visible
-  let isAnimating = false;
+  function startAnimation() {
+    if (!rafId) animate();
+  }
+
+  function stopAnimation() {
+    if (rafId) {
+      cancelAnimationFrame(rafId);
+      rafId = null;
+    }
+  }
+
+  // ── Intersection Observer — only run when About section is visible ──
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
-        if (!isAnimating) {
-          isAnimating = true;
-          animate();
-        }
+        startAnimation();
       } else {
-        isAnimating = false;
+        stopAnimation();
       }
     });
-  });
-  
-  observer.observe(container);
+  }, { threshold: 0.05 });
 
-  // 6. Resize handling
+  observer.observe(section);
+
+  // ── Resize ──
   window.addEventListener('resize', () => {
-    const newRect = container.getBoundingClientRect();
-    if (newRect.width === 0) return;
-    
-    camera.aspect = newRect.width / newRect.height;
+    const newRect = section.getBoundingClientRect();
+    const nw = newRect.width  || window.innerWidth;
+    const nh = newRect.height || 600;
+    camera.aspect = nw / nh;
     camera.updateProjectionMatrix();
-    renderer.setSize(newRect.width, newRect.height);
+    renderer.setSize(nw, nh);
   });
 });
